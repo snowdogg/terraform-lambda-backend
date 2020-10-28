@@ -16,4 +16,23 @@ module "DynamoDB" {
 }
 
 
+
+module "Lambda" {
+  source = "./modules/Lambda"
+
+  engineer = var.engineer
+}
+
+module "API" {
+  source = "./modules/API"
+
+  engineer = var.engineer
+  get_arn = module.Lambda.get_arn
+  post_arn = module.Lambda.post_arn
+}
+
 variable "engineer" {}
+
+output "base_url" {
+  value = module.API.base_url
+}
