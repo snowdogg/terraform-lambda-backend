@@ -29,10 +29,16 @@ module "API" {
   engineer = var.engineer
   get_arn = module.Lambda.get_arn
   post_arn = module.Lambda.post_arn
+  get_name = module.Lambda.get_name
+  post_name = module.Lambda.post_name
 }
 
 variable "engineer" {}
 
 output "base_url" {
   value = module.API.base_url
+}
+
+output "get_arn" {
+  value = module.Lambda.get_arn
 }

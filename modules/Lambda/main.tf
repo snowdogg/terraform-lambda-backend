@@ -16,7 +16,7 @@ resource "aws_iam_role_policy" "main" {
                 "ec2:AttachNetworkInterface",
                 "ec2:DescribeNetworkInterfaces",
                 "ec2:DeleteNetworkInterface",
-                "autoscaling:CompleteLifecycleAction"
+                "autoscaling:CompleteLifecycleAction" 
             ]
         }
     ]
@@ -27,7 +27,7 @@ EOF
 }
 
 resource "aws_iam_role" "main" {
-  name = "apilambdarole"
+  name = "amazingRole"
 
   assume_role_policy = <<-EOF
   {

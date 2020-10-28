@@ -9,3 +9,11 @@ variable "get_arn"{
 variable "post_arn"{
   description = "uri of the post function"
 }
+
+variable "get_name" {
+ description = "name of the Get function"
+}
+
+variable "post_name" {
+  description = "name of the Post function"
+}
