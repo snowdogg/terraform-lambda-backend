@@ -65,6 +65,11 @@ resource "aws_lambda_function" "post" {
       foo = "bar"
     }
   }
+  vpc_config {
+     subnet_ids = [var.private_subnet1, var.private_subnet2]
+     security_group_ids = [var.security_group]
+   } 
+
 }
 
 resource "aws_lambda_function" "get" {
@@ -83,4 +88,9 @@ resource "aws_lambda_function" "get" {
   environment {
     variables = {foo = "bar"}
   }
+  vpc_config {
+     subnet_ids = [var.private_subnet1, var.private_subnet2]
+     security_group_ids = [var.security_group]
+   } 
+
 }

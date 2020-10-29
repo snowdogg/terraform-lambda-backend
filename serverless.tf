@@ -19,7 +19,9 @@ module "DynamoDB" {
 
 module "Lambda" {
   source = "./modules/Lambda"
-
+  private_subnet1 = module.VPC.private_subnet1
+  private_subnet2 = module.VPC.private_subnet2
+  security_group = module.VPC.security_group
   engineer = var.engineer
 }
 

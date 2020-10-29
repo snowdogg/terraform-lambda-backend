@@ -32,6 +32,34 @@ resource "aws_subnet" "public_subnet2" {
   }
 }
 
+resource "aws_nat_gateway" "main" {
+  allocation_id = aws_eip.main.id
+  subnet_id     = aws_subnet.public_subnet1.id
+  depends_on    = [aws_internet_gateway.main]
+}
+
+resource "aws_eip" "main" {
+   depends_on    = [aws_internet_gateway.main]
+}
+
+resource "aws_subnet" "private_subnet1" {
+  vpc_id = aws_vpc.main.id
+  cidr_block = "10.0.2.0/24"
+  availability_zone = "us-west-1b"
+  tags = {
+    Name = "Amazing VPC Public Subnet 1"
+  }
+}
+
+resource "aws_subnet" "private_subnet2" {
+  vpc_id = aws_vpc.main.id
+  cidr_block = "10.0.3.0/24"
+  availability_zone = "us-west-1d"
+  tags = {
+    Name = "Amazing VPC Public Subnet 1"
+  }
+}
+
 resource "aws_route_table" "default" {
   vpc_id = aws_vpc.main.id
 
@@ -39,6 +67,26 @@ resource "aws_route_table" "default" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
+}
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.main.id
+  }
+
+}
+
+resource "aws_route_table_association" "private1" {
+  subnet_id      = aws_subnet.private_subnet1.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route_table_association" "private2" {
+  subnet_id      = aws_subnet.private_subnet1.id
+  route_table_id = aws_route_table.private.id
 }
 
 resource "aws_route_table_association" "public1" {
@@ -52,24 +100,23 @@ resource "aws_route_table_association" "public2" {
 }
 
 
-resource "aws_network_acl" "allowall" {
-  vpc_id = aws_vpc.main.id
+resource "aws_security_group" "main" {
+  name        = "allow_tls"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "TLS from VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
 
   egress {
-    protocol = "-1" #all protocols (tcp/udp etc)
-    rule_no = 100 #where it is in the stack
-    action = "allow" #allows all 
-    cidr_block = "0.0.0.0/0"
-    from_port = 0 #from all port ranges
-    to_port = 0 #to all port ranges
-
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
-  ingress {
-    from_port = 0 #from all port ranges 
-    to_port = 0 #to all port rangers
-    protocol = "-1"
-    action = "allow" #allows all
-    rule_no = 200 #where it is in the stack
-    cidr_block = "0.0.0.0/0" #
-  } 
 }
