@@ -59,9 +59,6 @@ resource "aws_api_gateway_integration" "post" {
    type                    = "AWS"
    uri                     = var.post_arn
 
-   request_parameters = {
-    "integration.request.header.X-Authorization" = "'static'"
-  }
 
   # Transforms the incoming XML request to JSON
   request_templates = {
@@ -119,11 +116,27 @@ resource "aws_api_gateway_method_response" "response_200" {
 resource "aws_api_gateway_integration_response" "get" {
   rest_api_id = aws_api_gateway_rest_api.main.id
   resource_id = aws_api_gateway_resource.main.id
-  http_method = "GET"
+  http_method = "POST"
   status_code = aws_api_gateway_method_response.response_200.status_code
+  depends_on = [var.get_arn]
   # response_parameters = {
   #   "method.response.header.Access-Control-Allow-Headers" = "'*'"
   #   "method.response.header.Access-Control-Allow-Methods" = "'GET'"
   #   "method.response.header.Access-Control-Allow-Origin" = "'*'"
   # }
-}
+} 
+
+
+
+resource "aws_api_gateway_integration_response" "post" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_resource.main.id
+  http_method = "GET"
+  status_code = aws_api_gateway_method_response.response_200.status_code
+  depends_on = [var.post_arn]
+  # response_parameters = {
+  #   "method.response.header.Access-Control-Allow-Headers" = "'*'"
+  #   "method.response.header.Access-Control-Allow-Methods" = "'GET'"
+  #   "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  # }
+} 

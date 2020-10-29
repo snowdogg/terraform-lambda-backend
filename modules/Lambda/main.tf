@@ -10,7 +10,13 @@ resource "aws_iam_role_policy" "main" {
             "Effect": "Allow",
             "Resource": "*",
             "Action": [
-                "dynamodb:*",
+                "dynamodb:BatchGetItem",
+                "dynamodb:Describe*",
+                "dynamodb:List*",
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
                 "ec2:DescribeInstances",
                 "ec2:CreateNetworkInterface",
                 "ec2:AttachNetworkInterface",
@@ -53,7 +59,7 @@ resource "aws_lambda_function" "post" {
   function_name = "create-user"
   role          = aws_iam_role.main.arn
   handler       = "index.handler"
-
+  timeout       = 9
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
@@ -77,7 +83,7 @@ resource "aws_lambda_function" "get" {
   function_name = "get-users"
   role          = aws_iam_role.main.arn
   handler       = "index.handler"
-
+  timeout       = 9
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
