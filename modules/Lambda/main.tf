@@ -10,13 +10,7 @@ resource "aws_iam_role_policy" "main" {
             "Effect": "Allow",
             "Resource": "*",
             "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:Describe*",
-                "dynamodb:List*",
-                "dynamodb:GetItem",
-                "dynamodb:PutItem",
-                "dynamodb:Query",
-                "dynamodb:Scan",
+                "dynamodb:*",
                 "ec2:DescribeInstances",
                 "ec2:CreateNetworkInterface",
                 "ec2:AttachNetworkInterface",
@@ -66,11 +60,11 @@ resource "aws_lambda_function" "post" {
   source_code_hash = filebase64sha256("lambdapost.zip")
 
   runtime = "nodejs12.x"
-  environment {
-    variables = {
-      foo = "bar"
-    }
-  }
+  # environment {
+  #   variables = {
+  #     foo = "bar"
+  #   }
+  # }
   vpc_config {
      subnet_ids = [var.private_subnet1, var.private_subnet2]
      security_group_ids = [var.security_group]
@@ -91,9 +85,9 @@ resource "aws_lambda_function" "get" {
 
   runtime = "nodejs12.x"
 
-  environment {
-    variables = {foo = "bar"}
-  }
+  # environment {
+  #   variables = {foo = "bar"}
+  # }
   vpc_config {
      subnet_ids = [var.private_subnet1, var.private_subnet2]
      security_group_ids = [var.security_group]

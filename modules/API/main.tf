@@ -3,9 +3,9 @@ resource "aws_api_gateway_rest_api" "main" {
   tags = {
     Engineer = var.engineer
   }
-    endpoint_configuration {
-    types = ["REGIONAL"]
-  }
+  #   endpoint_configuration {
+  #   types = ["REGIONAL"]
+  # }
 }
 
 resource "aws_api_gateway_resource" "main" {
@@ -33,7 +33,7 @@ resource "aws_api_gateway_integration" "get" {
    type                    = "AWS"
    uri                     = var.get_arn
 
-     # Transforms the incoming XML request to JSON
+#Transforms the incoming XML request to JSON
   request_templates = {
     "application/xml" = <<EOF
 {
@@ -60,7 +60,7 @@ resource "aws_api_gateway_integration" "post" {
    uri                     = var.post_arn
 
 
-  # Transforms the incoming XML request to JSON
+#Transforms the incoming XML request to JSON
   request_templates = {
     "application/xml" = <<EOF
 {
@@ -85,9 +85,9 @@ resource "aws_lambda_permission" "get" {
    function_name = var.get_name
    principal     = "apigateway.amazonaws.com"
 
-   # The "/*/*/*" portion grants access from any method on any resource
+   # The "/*/*" portion grants access from any method on any resource
    # within the API Gateway REST API.
-   source_arn = "${aws_api_gateway_rest_api.main.execution_arn}/*/*/*"
+   source_arn = "${aws_api_gateway_rest_api.main.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "post" {
@@ -96,12 +96,12 @@ resource "aws_lambda_permission" "post" {
    function_name = var.post_name
    principal     = "apigateway.amazonaws.com"
 
-   # The "/*/*/*" portion grants access from any method on any resource
+   # The "/*/*" portion grants access from any method on any resource
    # within the API Gateway REST API.
-   source_arn = "${aws_api_gateway_rest_api.main.execution_arn}/*/*/*"
+   source_arn = "${aws_api_gateway_rest_api.main.execution_arn}/*/*"
 }
 
-resource "aws_api_gateway_method_response" "response_200" {
+resource "aws_api_gateway_method_response" "response_200_get" {
   rest_api_id = aws_api_gateway_rest_api.main.id
   resource_id = aws_api_gateway_resource.main.id
   http_method = aws_api_gateway_method.get.http_method
@@ -113,12 +113,24 @@ resource "aws_api_gateway_method_response" "response_200" {
   # }
 }
 
+resource "aws_api_gateway_method_response" "response_200_post" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_resource.main.id
+  http_method = aws_api_gateway_method.post.http_method
+  status_code = "200"
+  # response_parameters = {
+  #   "method.response.header.Access-Control-Allow-Headers" = true
+  #   "method.response.header.Access-Control-Allow-Methods" = true
+  #   "method.response.header.Access-Control-Allow-Origin" = true
+  # }
+}
+
 resource "aws_api_gateway_integration_response" "get" {
   rest_api_id = aws_api_gateway_rest_api.main.id
   resource_id = aws_api_gateway_resource.main.id
-  http_method = "POST"
-  status_code = aws_api_gateway_method_response.response_200.status_code
-  depends_on = [var.get_arn]
+  http_method = "GET"
+  status_code = aws_api_gateway_method_response.response_200_get.status_code
+  depends_on = [var.get_arn, aws_api_gateway_integration.get, aws_api_gateway_integration.post]
   # response_parameters = {
   #   "method.response.header.Access-Control-Allow-Headers" = "'*'"
   #   "method.response.header.Access-Control-Allow-Methods" = "'GET'"
@@ -131,9 +143,9 @@ resource "aws_api_gateway_integration_response" "get" {
 resource "aws_api_gateway_integration_response" "post" {
   rest_api_id = aws_api_gateway_rest_api.main.id
   resource_id = aws_api_gateway_resource.main.id
-  http_method = "GET"
-  status_code = aws_api_gateway_method_response.response_200.status_code
-  depends_on = [var.post_arn]
+  http_method = "POST"
+  status_code = aws_api_gateway_method_response.response_200_post.status_code
+  depends_on = [var.post_arn, aws_api_gateway_integration.get, aws_api_gateway_integration.post]
   # response_parameters = {
   #   "method.response.header.Access-Control-Allow-Headers" = "'*'"
   #   "method.response.header.Access-Control-Allow-Methods" = "'GET'"

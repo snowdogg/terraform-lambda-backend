@@ -99,7 +99,6 @@ resource "aws_route_table_association" "public2" {
   route_table_id = aws_route_table.default.id
 }
 
-
 resource "aws_security_group" "main" {
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
@@ -112,6 +111,15 @@ resource "aws_security_group" "main" {
     protocol    = "tcp"
     cidr_blocks = [aws_vpc.main.cidr_block]
   }
+
+    ingress {
+    description = "TLS from VPC"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
 
   egress {
     from_port   = 0
