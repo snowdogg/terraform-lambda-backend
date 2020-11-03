@@ -1,4 +1,2 @@
-aws.tf
 .terraform
 terraform.tfstate*
-.idea/

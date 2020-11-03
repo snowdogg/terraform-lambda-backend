@@ -2,6 +2,17 @@ provider "aws" {
   region = "us-west-1"
 }
 
+terraform {
+  required_version = ">= 0.12.0"
+  backend "s3" {
+    shared_credentials_file = "~/.aws/credentials"
+    bucket = "cary-bucket"
+    key    = "terraform/terraform.tfstate"
+    region = "us-west-1"
+    acl = "private"
+  }
+}
+
 module "VPC" {
     source = "./modules/vpc"
 
