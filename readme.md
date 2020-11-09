@@ -55,3 +55,5 @@ Example entry: Username: "snowdogg", GovtName: "Andreas Cary"
 ### API Module
 
 Creates an API Gateway which receives GET requests and forwards them to the Get Users lambda function, and also receives POST requests and forwards them to the Create User lambda function.
+
+![wireframe](/wireframe.jpeg)
